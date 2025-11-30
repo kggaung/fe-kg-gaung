@@ -1,0 +1,162 @@
+/**
+ * EntityPage Component Styles
+ */
+
+.entity-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+}
+
+.entity-page-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.entity-breadcrumb {
+  margin-bottom: 24px;
+}
+
+.entity-breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #6366f1;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.entity-breadcrumb-link:hover {
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.entity-loading-state,
+.entity-error-state,
+.entity-empty-state {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.entity-loading-state p,
+.entity-error-state p,
+.entity-empty-state p {
+  margin: 16px 0 0 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.entity-error-state h2,
+.entity-empty-state h2 {
+  margin: 16px 0 8px 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.entity-error-state svg,
+.entity-empty-state svg {
+  margin: 0 auto;
+}
+
+.entity-back-button {
+  margin-top: 24px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.entity-back-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.entity-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.entity-action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.entity-action-button:hover {
+  background: white;
+  border-color: #6366f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.entity-action-button svg {
+  flex-shrink: 0;
+}
+
+.spinner-large {
+  border: 4px solid #e5e7eb;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .entity-page {
+    padding: 20px 12px;
+  }
+
+  .entity-loading-state,
+  .entity-error-state,
+  .entity-empty-state {
+    padding: 40px 24px;
+  }
+
+  .entity-actions {
+    flex-direction: column;
+  }
+
+  .entity-action-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

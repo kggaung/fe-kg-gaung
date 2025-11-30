@@ -514,6 +514,154 @@ Or if invalid:
 
 ---
 
+---
+
+### 11. Get Entity Info Box
+
+**Endpoint:** `GET /api/entity/{entityId}`
+
+**Description:** Retrieve comprehensive information about an entity for the Info Box display.
+
+**Path Parameters:**
+- `entityId` (required): URL-encoded entity ID or URI
+
+**Example Request:**
+```
+GET /api/entity/wd%3AQ252
+```
+
+**Response Format:**
+```json
+{
+  "entity": {
+    "id": "wd:Q252",
+    "label": "Indonesia",
+    "type": "country",
+    "description": "Country in Southeast Asia and Oceania",
+    "image": "https://example.com/indonesia.jpg",
+    "attributes": [
+      {
+        "property": "P298",
+        "propertyLabel": "ISO 3166-1 alpha-3 code",
+        "value": "IDN",
+        "valueType": "string"
+      },
+      {
+        "property": "P1082",
+        "propertyLabel": "Population",
+        "value": "273523615",
+        "valueType": "number",
+        "unit": "inhabitants"
+      },
+      {
+        "property": "P36",
+        "propertyLabel": "Capital",
+        "value": "wd:Q3630",
+        "valueLabel": "Jakarta",
+        "valueType": "entity"
+      }
+    ],
+    "relatedEntities": [
+      {
+        "id": "wd:Q11708",
+        "label": "South-East Asia",
+        "type": "region",
+        "relationshipType": "P361",
+        "relationshipLabel": "part of",
+        "description": "Subregion of Asia"
+      },
+      {
+        "id": "wd:Q7159",
+        "label": "World Health Organization",
+        "type": "organization",
+        "relationshipType": "P463",
+        "relationshipLabel": "member of"
+      }
+    ],
+    "sources": [
+      {
+        "name": "Wikidata",
+        "url": "https://www.wikidata.org/wiki/Q252",
+        "date": "2024"
+      }
+    ]
+  },
+  "sparqlQuery": "SELECT ?p ?o WHERE { wd:Q252 ?p ?o }"
+}
+```
+
+**Status Codes:**
+- `200 OK`: Entity information retrieved successfully
+- `404 Not Found`: Entity not found
+- `500 Internal Server Error`: Server error
+
+---
+
+### 12. Get Entity by Label
+
+**Endpoint:** `GET /api/entity/by-label`
+
+**Description:** Find entity information using its label/name.
+
+**Query Parameters:**
+- `label` (required): Entity label or name
+
+**Example Request:**
+```
+GET /api/entity/by-label?label=Indonesia
+```
+
+**Response Format:**
+Same as endpoint #11 (Get Entity Info Box)
+
+**Status Codes:**
+- `200 OK`: Entity found
+- `404 Not Found`: Entity not found
+- `400 Bad Request`: Missing label parameter
+- `500 Internal Server Error`: Server error
+
+---
+
+### 13. Get Related Entities
+
+**Endpoint:** `GET /api/entity/related`
+
+**Description:** Get entities related to a specific entity.
+
+**Query Parameters:**
+- `entityId` (required): URL-encoded entity ID or URI
+- `limit` (optional): Maximum number of related entities to return (default: 10)
+
+**Example Request:**
+```
+GET /api/entity/related?entityId=wd%3AQ252&limit=5
+```
+
+**Response Format:**
+```json
+{
+  "entities": [
+    {
+      "id": "wd:Q11708",
+      "label": "South-East Asia",
+      "type": "region",
+      "description": "Subregion of Asia",
+      "attributes": [],
+      "relatedEntities": [],
+      "sources": []
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- `200 OK`: Related entities retrieved
+- `400 Bad Request`: Missing or invalid entityId
+- `404 Not Found`: Source entity not found
+- `500 Internal Server Error`: Server error
+
+---
+
 ## Contact & Support
 
 For questions about API implementation, refer to the RDF data structure in the `rdf/` directory or contact the frontend development team.

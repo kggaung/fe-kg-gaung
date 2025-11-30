@@ -6,13 +6,20 @@
 import React, { useState } from 'react';
 import { QueryEditor } from '../../components/QueryEditor/QueryEditor';
 import { QueryResults } from '../../components/QueryResults/QueryResults';
+import { InfoBoxSheet } from '../../components/InfoBox/InfoBoxSheet';
 import { useSPARQLQuery } from '../../hooks/useSPARQLQuery';
+import { useInfoBoxSheet } from '../../hooks/useInfoBoxSheet';
 import './QueryPage.css';
 
 export const QueryPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const { results, isExecuting, error, executionTime, executeQuery, clearResults } =
     useSPARQLQuery();
+  const { isOpen, entityInfo, openSheet, closeSheet } = useInfoBoxSheet();
+
+  const handleEntityClick = (entityId: string) => {
+    openSheet(entityId);
+  };
 
   const handleExecute = () => {
     if (query.trim()) {
@@ -70,6 +77,16 @@ export const QueryPage: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* InfoBox Sheet */}
+      {entityInfo && (
+        <InfoBoxSheet
+          entityInfo={entityInfo}
+          isOpen={isOpen}
+          onClose={closeSheet}
+          onRelatedEntityClick={handleEntityClick}
+        />
+      )}
     </div>
   );
 };

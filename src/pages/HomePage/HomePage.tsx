@@ -7,14 +7,31 @@ import React from 'react';
 import { SearchBar } from '../../components/SearchBar/SearchBar';
 import { SearchResults } from '../../components/SearchResults/SearchResults';
 import { WorldMap } from '../../components/WorldMap/WorldMap';
+import { InfoBoxSheet } from '../../components/InfoBox/InfoBoxSheet';
 import { useSearch } from '../../hooks/useSearch';
+import { useInfoBoxSheet } from '../../hooks/useInfoBoxSheet';
+import type { Entity, CountryCoordinates } from '../../types';
 import './HomePage.css';
 
 export const HomePage: React.FC = () => {
   const { results, isLoading, error, search, total, page, nextPage, prevPage } = useSearch();
+  const { isOpen, entityInfo, openSheet, closeSheet } = useInfoBoxSheet();
 
   const handleSearch = (query: string) => {
     search({ query });
+  };
+
+  const handleResultClick = (entity: Entity) => {
+    openSheet(entity.id);
+  };
+
+  const handleCountryClick = (country: CountryCoordinates) => {
+    // Open sheet using country label
+    openSheet(country.label, true);
+  };
+
+  const handleRelatedEntityClick = (entityId: string) => {
+    openSheet(entityId);
   };
 
   return (
@@ -42,14 +59,25 @@ export const HomePage: React.FC = () => {
             page={page}
             onNextPage={nextPage}
             onPrevPage={prevPage}
+            onResultClick={handleResultClick}
           />
         </div>
       )}
 
       {/* Map Section */}
       <div className="map-section">
-        <WorldMap onCountryClick={(country) => console.log('Country clicked:', country)} />
+        <WorldMap onCountryClick={handleCountryClick} />
       </div>
+
+      {/* InfoBox Sheet */}
+      {entityInfo && (
+        <InfoBoxSheet
+          entityInfo={entityInfo}
+          isOpen={isOpen}
+          onClose={closeSheet}
+          onRelatedEntityClick={handleRelatedEntityClick}
+        />
+      )}
     </div>
   );
 };

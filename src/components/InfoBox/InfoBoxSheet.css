@@ -1,0 +1,354 @@
+/**
+ * InfoBoxSheet Component Styles
+ * Right-side expandable sheet design
+ */
+
+/* Overlay */
+.infobox-sheet-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.infobox-sheet-overlay.expanded {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Sheet Container */
+.infobox-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  background: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease, width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.infobox-sheet.open {
+  transform: translateX(0);
+}
+
+.infobox-sheet.expanded {
+  width: 60vw;
+}
+
+/* Sheet Header */
+.infobox-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.infobox-sheet-expand-btn,
+.infobox-sheet-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background 0.2s;
+}
+
+.infobox-sheet-expand-btn:hover,
+.infobox-sheet-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.infobox-sheet-expand-btn {
+  margin-right: auto;
+}
+
+/* Sheet Content */
+.infobox-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* Reuse InfoBox styles */
+.infobox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.infobox-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.infobox-sheet.expanded .infobox-title {
+  font-size: 28px;
+}
+
+.infobox-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infobox-image-wrapper {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.infobox-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.infobox-section {
+  margin-bottom: 24px;
+}
+
+.infobox-section:last-child {
+  margin-bottom: 0;
+}
+
+.infobox-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.infobox-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+}
+
+.infobox-attributes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infobox-attribute-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  align-items: center;
+}
+
+.infobox-sheet.expanded .infobox-attribute-row {
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  padding: 12px;
+}
+
+.infobox-attribute-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.infobox-attribute-value {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.infobox-entity-link {
+  background: none;
+  border: none;
+  color: #6366f1;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.infobox-entity-link:hover {
+  color: #4f46e5;
+}
+
+.infobox-unit {
+  color: #6b7280;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.infobox-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.infobox-sheet.expanded .infobox-related-grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.infobox-related-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infobox-related-card:hover {
+  background: #f3f4f6;
+  border-color: #6366f1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.1);
+}
+
+.infobox-related-relation {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.infobox-related-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.infobox-related-description {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.infobox-related-type {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.infobox-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infobox-source-item {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.infobox-source-link {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.infobox-source-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.infobox-source-name {
+  font-weight: 500;
+}
+
+.infobox-source-date {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* Scrollbar Styling */
+.infobox-sheet-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.infobox-sheet-content::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.infobox-sheet-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.infobox-sheet-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .infobox-sheet {
+    width: 100vw;
+  }
+
+  .infobox-sheet.expanded {
+    width: 100vw;
+  }
+
+  .infobox-sheet-content {
+    padding: 16px;
+  }
+
+  .infobox-title {
+    font-size: 20px;
+  }
+
+  .infobox-attribute-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

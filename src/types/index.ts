@@ -110,3 +110,44 @@ export interface QueryHistory {
   executionTime?: number;
   resultCount?: number;
 }
+
+// Info Box Types
+export interface EntityInfo {
+  id: string;
+  label: string;
+  type: EntityType;
+  description?: string;
+  image?: string;
+  attributes: EntityAttribute[];
+  relatedEntities: RelatedEntity[];
+  sources?: EntitySource[];
+}
+
+export interface EntityAttribute {
+  property: string;
+  propertyLabel: string;
+  value: string;
+  valueLabel?: string;
+  valueType: 'string' | 'number' | 'date' | 'uri' | 'entity';
+  unit?: string;
+}
+
+export interface RelatedEntity {
+  id: string;
+  label: string;
+  type: EntityType;
+  relationshipType: string;
+  relationshipLabel: string;
+  description?: string;
+}
+
+export interface EntitySource {
+  name: string;
+  url?: string;
+  date?: string;
+}
+
+export interface InfoBoxResponse {
+  entity: EntityInfo;
+  sparqlQuery?: string;
+}
