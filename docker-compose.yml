@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  fe-kg-gaung:
+    image: fe-kg-gaung:latest
+    container_name: fe-kg-gaung
+    ports:
+      - "127.0.0.1:5173:80"

@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file from secrets
+        run: |
+          cat <<EOF > .env
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
+          VITE_ENABLE_MAP=${{ secrets.VITE_ENABLE_MAP }}
+          VITE_ENABLE_SEARCH=${{ secrets.VITE_ENABLE_SEARCH }}
+          VITE_ENABLE_SPARQL_QUERY=${{ secrets.VITE_ENABLE_SPARQL_QUERY }}
+          VITE_ENABLE_INFO_BOX=${{ secrets.VITE_ENABLE_INFO_BOX }}
+          EOF
+
+      - name: Build Docker image
+        run: docker build -t fe-kg-gaung:latest .
+
+      - name: Save Docker image to file
+        run: docker save fe-kg-gaung:latest -o fe-kg-gaung.tar
+
+      - name: Prepare deploy files
+        run: |
+          mkdir fe-kg-gaung
+          mv fe-kg-gaung.tar docker-compose.yml fe-kg-gaung/
+
+      - name: Copy files to Server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "fe-kg-gaung/*"
+          target: "~/"
+
+      - name: Run on Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/fe-kg-gaung
+
+            docker compose down || true
+            docker rmi fe-kg-gaung:latest || true
+            
+            docker load -i fe-kg-gaung.tar
+            rm fe-kg-gaung.tar
+            
+            docker compose up -d
