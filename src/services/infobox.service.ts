@@ -87,4 +87,10 @@ export class InfoBoxService implements IInfoBoxService {
 }
 
 // Export singleton instance following Dependency Injection pattern
-export const infoBoxService = new InfoBoxService(httpClient);
+// Use mock service for development
+import { mockInfoBoxService } from './infobox.service.mock';
+
+// Toggle between mock and real service
+const USE_MOCK = true;
+
+export const infoBoxService = USE_MOCK ? mockInfoBoxService : new InfoBoxService(httpClient);

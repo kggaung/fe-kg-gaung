@@ -3,7 +3,7 @@
  * Provides mock data for development without backend
  */
 
-import type { EntityInfo, InfoBoxResponse } from '../types';
+import type { EntityInfo } from '../types';
 
 const mockEntities: Record<string, EntityInfo> = {
   'Indonesia': {

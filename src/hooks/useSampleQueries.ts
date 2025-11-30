@@ -23,7 +23,11 @@ export const useSampleQueries = (): UseSampleQueriesReturn => {
 
     try {
       const data = await sparqlService.getSampleQueries();
-      setSamples(data);
+      // Extract query strings from sample objects
+      const queries = data.map((sample: any) => 
+        typeof sample === 'string' ? sample : sample.query
+      );
+      setSamples(queries);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load sample queries';
       setError(errorMessage);
