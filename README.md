@@ -1,19 +1,64 @@
-# React + TypeScript + Vite
+# Knowledge Graph Health Data Explorer - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend aplikasi untuk mengeksplorasi data kesehatan global menggunakan Knowledge Graph berbasis RDF.
 
-Currently, two official plugins are available:
+## 🚀 Fitur
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✅ Implemented
+- **Search Functionality**: Pencarian entitas dalam Knowledge Graph dengan autocomplete
+- **Interactive Map**: Peta dunia interaktif dengan marker untuk setiap negara
+- **Responsive Design**: Desain yang responsif dan mobile-friendly
+- **Clean Architecture**: Implementasi menggunakan SOLID principles dan clean code
+- **Service Layer**: Abstraksi API dengan dependency injection
+- **Type Safety**: Full TypeScript support
 
-## React Compiler
+### 🔄 Upcoming (Need Backend Implementation)
+- Info box untuk detail negara di map
+- Detail page untuk entitas
+- Filter dan sorting
+- Data visualization charts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📋 Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+ 
+- npm atau yarn
+- Backend API (lihat API_DOCUMENTATION.md)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Installation
+
+1. Install dependencies
+```bash
+npm install
+```
+
+2. Setup environment variables
+```bash
+cp .env.example .env
+```
+
+Edit `.env` sesuai kebutuhan:
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_TIMEOUT=30000
+```
+
+## 🏃 Running the Application
+
+### Development Mode
+```bash
+npm run dev
+```
+
+### Production Build
+```bash
+npm run build
+```
+
+## 🔌 Backend Integration
+
+Aplikasi ini membutuhkan backend API. Lihat **API_DOCUMENTATION.md** untuk detail endpoints yang perlu diimplementasikan.
+
+### Backend TODO List
 
 ```js
 export default defineConfig([
