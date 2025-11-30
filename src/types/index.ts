@@ -75,3 +75,38 @@ export interface ApiError {
   code?: string;
   details?: unknown;
 }
+
+// SPARQL Query Types
+export interface SPARQLQueryRequest {
+  query: string;
+  format?: 'json' | 'xml' | 'csv';
+  limit?: number;
+}
+
+export interface SPARQLQueryResponse {
+  head: {
+    vars: string[];
+  };
+  results: {
+    bindings: SPARQLBinding[];
+  };
+}
+
+export interface SPARQLBinding {
+  [key: string]: SPARQLValue;
+}
+
+export interface SPARQLValue {
+  type: 'uri' | 'literal' | 'bnode';
+  value: string;
+  datatype?: string;
+  'xml:lang'?: string;
+}
+
+export interface QueryHistory {
+  id: string;
+  query: string;
+  timestamp: Date;
+  executionTime?: number;
+  resultCount?: number;
+}

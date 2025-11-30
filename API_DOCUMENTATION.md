@@ -305,6 +305,170 @@ For the `/api/map/countries` endpoint, you'll need to create a mapping of ISO 31
 
 ---
 
+## 6. SPARQL Query Execution
+
+**Endpoint:** `POST /api/sparql/query`
+
+**Description:** Execute a SPARQL query against the Knowledge Graph endpoint.
+
+**Request Body:**
+```json
+{
+  "query": "SELECT ?subject ?predicate ?object WHERE { ?subject ?predicate ?object . } LIMIT 10",
+  "format": "json",
+  "limit": 1000
+}
+```
+
+**Response Format:**
+```json
+{
+  "head": {
+    "vars": ["subject", "predicate", "object"]
+  },
+  "results": {
+    "bindings": [
+      {
+        "subject": {
+          "type": "uri",
+          "value": "http://example.org/IND"
+        },
+        "predicate": {
+          "type": "uri",
+          "value": "http://www.w3.org/2000/01/rdf-schema#label"
+        },
+        "object": {
+          "type": "literal",
+          "value": "Indonesia"
+        }
+      }
+    ]
+  }
+}
+```
+
+**Status Codes:**
+- `200 OK`: Query executed successfully
+- `400 Bad Request`: Invalid SPARQL syntax
+- `500 Internal Server Error`: Query execution failed
+
+---
+
+### 7. Validate SPARQL Query
+
+**Endpoint:** `POST /api/sparql/validate`
+
+**Description:** Validate SPARQL query syntax without executing.
+
+**Request Body:**
+```json
+{
+  "query": "SELECT ?s ?p ?o WHERE { ?s ?p ?o . }"
+}
+```
+
+**Response Format:**
+```json
+{
+  "valid": true
+}
+```
+
+Or if invalid:
+```json
+{
+  "valid": false,
+  "error": "Syntax error at line 1: Expected '{' but found '}'"
+}
+```
+
+**Status Codes:**
+- `200 OK`: Validation completed
+- `400 Bad Request`: Missing query parameter
+
+---
+
+### 8. Get Sample Queries
+
+**Endpoint:** `GET /api/sparql/samples`
+
+**Description:** Get a list of sample SPARQL queries for user reference.
+
+**Response Format:**
+```json
+{
+  "queries": [
+    "SELECT ?country ?label WHERE { ?country rdf:type <http://example.org/Country> . ?country rdfs:label ?label . } LIMIT 10",
+    "SELECT ?year ?hivCases WHERE { ?record <http://example.org/location> <http://example.org/IND> . ?record <http://example.org/year> ?year . ?record <http://example.org/hivCases> ?hivCases . } ORDER BY ?year",
+    "SELECT (COUNT(?record) as ?count) WHERE { ?record rdf:type <http://example.org/HealthRecord> . }"
+  ]
+}
+```
+
+**Status Codes:**
+- `200 OK`: Samples retrieved successfully
+
+---
+
+### 9. Get Query History
+
+**Endpoint:** `GET /api/sparql/history`
+
+**Description:** Get user's query execution history.
+
+**Query Parameters:**
+- `limit` (optional): Number of history items (default: 20)
+
+**Response Format:**
+```json
+{
+  "history": [
+    {
+      "id": "hist_001",
+      "query": "SELECT * WHERE { ?s ?p ?o . } LIMIT 10",
+      "timestamp": "2025-12-01T10:30:00Z",
+      "executionTime": 245,
+      "resultCount": 10
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- `200 OK`: History retrieved successfully
+
+---
+
+### 10. Save Query to History
+
+**Endpoint:** `POST /api/sparql/history`
+
+**Description:** Save executed query to user's history.
+
+**Request Body:**
+```json
+{
+  "query": "SELECT * WHERE { ?s ?p ?o . } LIMIT 10",
+  "executionTime": 245,
+  "resultCount": 10,
+  "timestamp": "2025-12-01T10:30:00Z"
+}
+```
+
+**Response Format:**
+```json
+{
+  "success": true,
+  "id": "hist_001"
+}
+```
+
+**Status Codes:**
+- `201 Created`: History saved successfully
+- `400 Bad Request`: Invalid request body
+
+---
+
 ## Testing
 
 ### Sample Test Scenarios
