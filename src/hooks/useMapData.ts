@@ -4,7 +4,8 @@
 
 import { useState, useEffect } from 'react';
 import { mapService } from '../services/map.service';
-import type { CountryCoordinates, ApiError } from '../types';
+import type { CountryCoordinates } from '../types';
+import { countryCoordinates } from '../data/country-coordinates';
 
 interface UseMapDataReturn {
   countries: CountryCoordinates[];
@@ -26,9 +27,10 @@ export const useMapData = (): UseMapDataReturn => {
       const data = await mapService.getCountryCoordinates();
       setCountries(data);
     } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || 'Failed to load map data');
-      setCountries([]);
+      // Fallback to static data if API fails
+      console.warn('API unavailable, using static data:', err);
+      setCountries(countryCoordinates);
+      setError(null); // Clear error since we have fallback data
     } finally {
       setIsLoading(false);
     }

@@ -4,17 +4,28 @@
  */
 
 import React, { useState } from 'react';
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+  ZoomableGroup,
+} from 'react-simple-maps';
 import type { CountryCoordinates } from '../../types';
 import { useMapData } from '../../hooks/useMapData';
 import './WorldMap.css';
+
+const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 
 interface WorldMapProps {
   onCountryClick?: (country: CountryCoordinates) => void;
 }
 
 export const WorldMap: React.FC<WorldMapProps> = ({ onCountryClick }) => {
-  const { countries, isLoading, error } = useMapData();
+  const { countries, isLoading } = useMapData();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [tooltipContent, setTooltipContent] = useState<string>('');
+  const [zoom, setZoom] = useState<number>(1);
 
   if (isLoading) {
     return (
@@ -22,27 +33,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({ onCountryClick }) => {
         <div className="map-loading">
           <div className="spinner-large" />
           <p>Loading map data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="map-container">
-        <div className="map-error">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"
-              stroke="#ef4444"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path d="M12 8v4M12 16h.01" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <h3>Map Loading Error</h3>
-          <p>{error}</p>
         </div>
       </div>
     );
@@ -62,123 +52,127 @@ export const WorldMap: React.FC<WorldMapProps> = ({ onCountryClick }) => {
       </div>
 
       <div className="map-wrapper">
-        <svg
-          className="world-map-svg"
-          viewBox="0 0 1000 500"
-          preserveAspectRatio="xMidYMid meet"
+        {tooltipContent && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              background: 'white',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              pointerEvents: 'none',
+              zIndex: 1000,
+            }}
+          >
+            {tooltipContent}
+          </div>
+        )}
+
+        <ComposableMap
+          projection="geoMercator"
+          projectionConfig={{
+            scale: 147,
+            center: [0, 20],
+          }}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
         >
-          {/* Background */}
-          <rect width="1000" height="500" fill="#f0f9ff" />
+          <ZoomableGroup onMove={(position) => setZoom(position.zoom)}>
+            <Geographies geography={geoUrl}>
+              {({ geographies }: { geographies: any[] }) =>
+                geographies.map((geo: any) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill="#e2e8f0"
+                    stroke="#cbd5e1"
+                    strokeWidth={0.5}
+                    style={{
+                      default: {
+                        fill: '#e2e8f0',
+                        stroke: '#cbd5e1',
+                        strokeWidth: 0.5,
+                        outline: 'none',
+                      },
+                      hover: {
+                        fill: '#cbd5e1',
+                        stroke: '#94a3b8',
+                        strokeWidth: 0.75,
+                        outline: 'none',
+                      },
+                      pressed: {
+                        fill: '#94a3b8',
+                        stroke: '#64748b',
+                        strokeWidth: 1,
+                        outline: 'none',
+                      },
+                    }}
+                    onMouseEnter={() => {
+                      setTooltipContent(geo.properties.name);
+                    }}
+                    onMouseLeave={() => {
+                      setTooltipContent('');
+                    }}
+                  />
+                ))
+              }
+            </Geographies>
 
-          {/* Grid lines for reference */}
-          <g className="grid-lines" opacity="0.2">
-            {[...Array(11)].map((_, i) => (
-              <line
-                key={`h-${i}`}
-                x1="0"
-                y1={i * 50}
-                x2="1000"
-                y2={i * 50}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-              />
-            ))}
-            {[...Array(21)].map((_, i) => (
-              <line
-                key={`v-${i}`}
-                x1={i * 50}
-                y1="0"
-                x2={i * 50}
-                y2="500"
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-              />
-            ))}
-          </g>
-
-          {/* Country markers */}
-          <g className="country-markers">
+            {/* Country markers */}
             {countries.map((country) => {
-              // Convert lat/long to SVG coordinates (simplified projection)
-              // Longitude: -180 to 180 -> 0 to 1000
-              // Latitude: 90 to -90 -> 0 to 500
-              const x = ((country.longitude + 180) / 360) * 1000;
-              const y = ((90 - country.latitude) / 180) * 500;
-
               const isHovered = hoveredCountry === country.iso3Code;
+              // Adjust marker size based on zoom level (smaller when zoomed out, larger when zoomed in)
+              const baseRadius = 3.5 / zoom;
+              const hoverRadius = 5 / zoom;
+              const pulseRadius = 8 / zoom;
+              const strokeWidth = 1.5 / zoom;
 
               return (
-                <g
+                <Marker
                   key={country.iso3Code}
-                  className={`country-marker ${isHovered ? 'hovered' : ''}`}
-                  onMouseEnter={() => setHoveredCountry(country.iso3Code)}
-                  onMouseLeave={() => setHoveredCountry(null)}
+                  coordinates={[country.longitude, country.latitude]}
+                  onMouseEnter={() => {
+                    setHoveredCountry(country.iso3Code);
+                    setTooltipContent(country.label);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredCountry(null);
+                    setTooltipContent('');
+                  }}
                   onClick={() => handleMarkerClick(country)}
-                  style={{ cursor: 'pointer' }}
                 >
-                  {/* Marker circle */}
                   <circle
-                    cx={x}
-                    cy={y}
-                    r={isHovered ? 8 : 6}
+                    r={isHovered ? hoverRadius : baseRadius}
                     fill="#6366f1"
                     stroke="white"
-                    strokeWidth="2"
-                    opacity={isHovered ? 1 : 0.8}
-                    className="marker-circle"
+                    strokeWidth={strokeWidth}
+                    opacity={isHovered ? 1 : 0.85}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
                   />
-
-                  {/* Pulse animation on hover */}
                   {isHovered && (
                     <circle
-                      cx={x}
-                      cy={y}
-                      r="12"
+                      r={pulseRadius}
                       fill="none"
                       stroke="#6366f1"
-                      strokeWidth="2"
-                      opacity="0"
-                      className="marker-pulse"
+                      strokeWidth={strokeWidth * 1.33}
+                      opacity={0.3}
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                      }}
                     />
                   )}
-
-                  {/* Tooltip on hover */}
-                  {isHovered && (
-                    <g className="marker-tooltip">
-                      <rect
-                        x={x + 15}
-                        y={y - 25}
-                        width={country.label.length * 7 + 20}
-                        height="30"
-                        fill="white"
-                        stroke="#e5e7eb"
-                        strokeWidth="1"
-                        rx="6"
-                        filter="url(#tooltip-shadow)"
-                      />
-                      <text
-                        x={x + 25}
-                        y={y - 5}
-                        fontSize="12"
-                        fontWeight="600"
-                        fill="#1f2937"
-                      >
-                        {country.label}
-                      </text>
-                    </g>
-                  )}
-                </g>
+                </Marker>
               );
             })}
-          </g>
-
-          {/* Shadow filter for tooltips */}
-          <defs>
-            <filter id="tooltip-shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2" />
-            </filter>
-          </defs>
-        </svg>
+          </ZoomableGroup>
+        </ComposableMap>
       </div>
 
       <div className="map-legend">
