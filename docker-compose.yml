@@ -4,5 +4,11 @@ services:
   fe-kg-gaung:
     image: fe-kg-gaung:latest
     container_name: fe-kg-gaung
-    ports:
-      - "127.0.0.1:5173:80"
+    expose:
+      - "80"
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external: true
