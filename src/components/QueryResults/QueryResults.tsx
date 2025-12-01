@@ -78,7 +78,7 @@ export const QueryResults: React.FC<QueryResultsProps> = ({
   const endIndex = Math.min(startIndex + pageSize, totalResults);
   const currentBindings = bindings.slice(startIndex, endIndex);
 
-  const formatValue = (value: any) => {
+  const formatValue = (value: { type: string; value: string; datatype?: string } | undefined) => {
     if (!value) return '-';
     
     if (value.type === 'uri') {

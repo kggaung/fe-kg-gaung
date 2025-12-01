@@ -83,8 +83,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({ onCountryClick }) => {
         >
           <ZoomableGroup onMove={(position) => setZoom(position.zoom)}>
             <Geographies geography={geoUrl}>
-              {({ geographies }: { geographies: any[] }) =>
-                geographies.map((geo: any) => (
+              {({ geographies }: { geographies: Array<{ rsmKey: string; properties: Record<string, unknown> }> }) =>
+                geographies.map((geo: { rsmKey: string; properties: Record<string, unknown> }) => (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
@@ -112,7 +112,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ onCountryClick }) => {
                       },
                     }}
                     onMouseEnter={() => {
-                      setTooltipContent(geo.properties.name);
+                      setTooltipContent(String(geo.properties.name || ''));
                     }}
                     onMouseLeave={() => {
                       setTooltipContent('');

@@ -2,6 +2,7 @@
  * InfoBoxSheet Component
  * Right-side expandable sheet for displaying entity information
  * Can be used across all pages
+ * Features: Expand/Collapse, Fullscreen mode, Health Metrics display
  */
 
 import React, { useState } from 'react';
@@ -22,10 +23,32 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
   onRelatedEntityClick,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+
+  // Set default year when health metrics are loaded
+  React.useEffect(() => {
+    if (entityInfo?.healthMetrics?.availableYears && entityInfo.healthMetrics.availableYears.length > 0) {
+      setSelectedYear(entityInfo.healthMetrics.availableYears[0]); // Default to most recent year
+    }
+  }, [entityInfo?.healthMetrics]);
+  
+  // Filter health metrics by selected year
+  const filteredHealthMetrics = React.useMemo(() => {
+    const healthMetrics = entityInfo?.healthMetrics;
+    if (!healthMetrics || !selectedYear) return healthMetrics;
+    
+    return {
+      diseaseCases: healthMetrics.diseaseCases.filter(m => m.year === selectedYear),
+      vaccinationCoverage: healthMetrics.vaccinationCoverage.filter(m => m.year === selectedYear),
+      population: healthMetrics.population.filter(m => m.year === selectedYear),
+      availableYears: healthMetrics.availableYears,
+    };
+  }, [entityInfo?.healthMetrics, selectedYear]);
 
   if (!entityInfo) return null;
 
-  const { label, type, description, image, attributes, relatedEntities, sources } = entityInfo;
+  const { label, type, description, image, attributes, healthMetrics, relatedEntities, sources } = entityInfo;
 
   const handleRelatedClick = (entityId: string) => {
     if (onRelatedEntityClick) {
@@ -47,8 +70,19 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
     return value;
   };
 
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString();
+  };
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+    if (!isFullscreen) {
+      setIsExpanded(false); // Close expand mode when entering fullscreen
+    }
   };
 
   return (
@@ -56,40 +90,68 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
       {/* Overlay */}
       {isOpen && (
         <div 
-          className={`infobox-sheet-overlay ${isExpanded ? 'expanded' : ''}`}
+          className={`infobox-sheet-overlay ${isExpanded ? 'expanded' : ''} ${isFullscreen ? 'fullscreen' : ''}`}
           onClick={onClose}
         />
       )}
 
       {/* Sheet */}
-      <div className={`infobox-sheet ${isOpen ? 'open' : ''} ${isExpanded ? 'expanded' : ''}`}>
+      <div className={`infobox-sheet ${isOpen ? 'open' : ''} ${isExpanded ? 'expanded' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
         {/* Sheet Header */}
         <div className="infobox-sheet-header">
-          <button 
-            className="infobox-sheet-expand-btn" 
-            onClick={toggleExpand}
-            title={isExpanded ? 'Collapse' : 'Expand'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              {isExpanded ? (
-                <path 
-                  d="M5 12h14M12 5l7 7-7 7" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              ) : (
-                <path 
-                  d="M19 12H5M12 19l-7-7 7-7" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              )}
-            </svg>
-          </button>
+          <div className="infobox-sheet-header-actions">
+            <button 
+              className="infobox-sheet-expand-btn" 
+              onClick={toggleExpand}
+              title={isExpanded ? 'Collapse' : 'Expand'}
+              disabled={isFullscreen}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                {isExpanded ? (
+                  <path 
+                    d="M5 12h14M12 5l7 7-7 7" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                ) : (
+                  <path 
+                    d="M19 12H5M12 19l-7-7 7-7" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                )}
+              </svg>
+            </button>
+            <button 
+              className="infobox-sheet-fullscreen-btn" 
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                {isFullscreen ? (
+                  <path 
+                    d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                ) : (
+                  <path 
+                    d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
           <button className="infobox-sheet-close-btn" onClick={onClose}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -151,6 +213,83 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Health Metrics Section */}
+          {healthMetrics && (
+            <div className="infobox-section">
+              <div className="infobox-health-header">
+                <h2 className="infobox-section-title">Health Data</h2>
+                {healthMetrics.availableYears.length > 0 && (
+                  <select 
+                    className="infobox-year-selector"
+                    value={selectedYear || ''}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  >
+                    {healthMetrics.availableYears.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              
+              {/* Disease Cases */}
+              {filteredHealthMetrics && filteredHealthMetrics.diseaseCases.length > 0 && (
+                <div className="infobox-health-category">
+                  <h3 className="infobox-health-category-title">Disease Cases</h3>
+                  <div className="infobox-health-grid">
+                    {healthMetrics.diseaseCases.map((metric) => (
+                      <div key={metric.id} className="infobox-health-card">
+                        <div className="infobox-health-label">{metric.label}</div>
+                        <div className="infobox-health-value">
+                          {formatNumber(metric.value)}
+                          {metric.unit && <span className="infobox-health-unit"> {metric.unit}</span>}
+                        </div>
+                        <div className="infobox-health-year">Year: {metric.year}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Vaccination Coverage */}
+              {filteredHealthMetrics && filteredHealthMetrics.vaccinationCoverage.length > 0 && (
+                <div className="infobox-health-category">
+                  <h3 className="infobox-health-category-title">Vaccination Coverage (One-year-olds)</h3>
+                  <div className="infobox-health-grid">
+                    {filteredHealthMetrics.vaccinationCoverage.map((metric) => (
+                      <div key={metric.id} className="infobox-health-card">
+                        <div className="infobox-health-label">{metric.label}</div>
+                        <div className="infobox-health-value">
+                          {formatNumber(metric.value)}
+                          {metric.unit && <span className="infobox-health-unit"> {metric.unit}</span>}
+                        </div>
+                        <div className="infobox-health-year">Year: {metric.year}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Population */}
+              {filteredHealthMetrics && filteredHealthMetrics.population.length > 0 && (
+                <div className="infobox-health-category">
+                  <h3 className="infobox-health-category-title">Population Data</h3>
+                  <div className="infobox-health-grid">
+                    {filteredHealthMetrics.population.map((metric) => (
+                      <div key={metric.id} className="infobox-health-card">
+                        <div className="infobox-health-label">{metric.label}</div>
+                        <div className="infobox-health-value">
+                          {formatNumber(metric.value)}
+                          {metric.unit && <span className="infobox-health-unit"> {metric.unit}</span>}
+                        </div>
+                        <div className="infobox-health-year">Year: {metric.year}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

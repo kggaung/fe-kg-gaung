@@ -13,6 +13,7 @@ export interface HealthRecord {
   id: string;
   location: string; // Entity ID
   year: number;
+  // Disease Cases
   hivCases?: number;
   malariaCases?: number;
   rabiesCases?: number;
@@ -21,6 +22,8 @@ export interface HealthRecord {
   guineaworm?: number;
   polioCases?: number;
   smallpoxCases?: number;
+  yawsCases?: number;
+  // Vaccination Coverage (one-year-olds)
   bcg?: number;
   dtp3?: number;
   hepb3?: number;
@@ -29,7 +32,25 @@ export interface HealthRecord {
   polio3?: number;
   rotavirus?: number;
   rubella1?: number;
+  // Population
   populationAge0?: number;
+}
+
+// Health Metrics grouped by category
+export interface HealthMetrics {
+  diseaseCases: HealthMetricItem[];
+  vaccinationCoverage: HealthMetricItem[];
+  population: HealthMetricItem[];
+  availableYears: number[]; // List of years with available data
+}
+
+export interface HealthMetricItem {
+  id: string;
+  label: string;
+  value: number;
+  year: number;
+  unit?: string;
+  category: 'disease' | 'vaccination' | 'population';
 }
 
 // Property Types
@@ -119,6 +140,7 @@ export interface EntityInfo {
   description?: string;
   image?: string;
   attributes: EntityAttribute[];
+  healthMetrics?: HealthMetrics;
   relatedEntities: RelatedEntity[];
   sources?: EntitySource[];
 }

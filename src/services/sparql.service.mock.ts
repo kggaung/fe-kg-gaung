@@ -104,7 +104,7 @@ export class MockSPARQLService {
     return { valid: true };
   }
 
-  async getSampleQueries(): Promise<any[]> {
+  async getSampleQueries(): Promise<Array<{ id: string; title: string; query: string }>> {
     await new Promise(resolve => setTimeout(resolve, 100));
     return mockSampleQueries;
   }

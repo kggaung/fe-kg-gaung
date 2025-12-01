@@ -6,6 +6,7 @@
 - [Architecture Overview](#architecture-overview)
 - [Backend Requirements](#backend-requirements)
 - [API Endpoints](#api-endpoints)
+- [Health Metrics Integration](#health-metrics-integration)
 - [Mock Services](#mock-services)
 - [Feature Development](#feature-development)
 - [Code Structure](#code-structure)
@@ -564,6 +565,292 @@ GET /api/entities/wd:Q252/health-records?startYear=2015&endYear=2020
 
 ---
 
+## 🏥 Health Metrics Integration
+
+### Overview
+
+Frontend terintegrasi dengan 19 health metrics dari RDF design:
+- **9 Disease Cases**: HIV/AIDS, Malaria, Tuberculosis, Rabies, Cholera, Yaws, Polio, Smallpox, Guinea Worm
+- **8 Vaccination Coverage**: BCG, DTP3, HepB3, Hib3, Measles1, Polio3, Rotavirus, Rubella1
+- **1 Population Data**: Population Age 0
+
+### Year Selector Feature
+
+Frontend memiliki fitur **year selector dropdown** yang memungkinkan user memilih tahun spesifik untuk melihat data kesehatan:
+
+**Key Features:**
+- Dropdown muncul di sebelah "Health Data" title
+- Default: tahun terbaru (dari `availableYears[0]`)
+- Client-side filtering (instant update, no API calls)
+- Styling: Purple accent konsisten dengan tema
+
+**User Flow:**
+1. User klik country marker atau search result
+2. Info Box terbuka dengan health metrics
+3. Default tampil data tahun terbaru
+4. User bisa pilih tahun lain dari dropdown
+5. Data health metrics update otomatis
+
+### API Endpoints Required
+
+#### 1. GET /api/entity/{entityId} (with health metrics)
+
+**Query Parameters:**
+- `includeHealthMetrics` (optional, boolean, default: true)
+- `year` (optional, number): Filter by specific year (optional - frontend prefer all years)
+
+**Example:**
+```http
+GET /api/entity/wd:Q252?includeHealthMetrics=true
+```
+
+**Response Format:**
+```json
+{
+  "id": "wd:Q252",
+  "label": "Indonesia",
+  "type": "country",
+  "healthMetrics": {
+    "diseaseCases": [
+      { "id": "hivCases", "label": "HIV/AIDS Cases", "value": 45000, "year": 2020, "category": "disease" },
+      { "id": "hivCases", "label": "HIV/AIDS Cases", "value": 43500, "year": 2019, "category": "disease" },
+      { "id": "malariaCases", "label": "Malaria Cases", "value": 120000, "year": 2020, "category": "disease" }
+    ],
+    "vaccinationCoverage": [
+      { "id": "bcg", "label": "BCG", "value": 3250000, "year": 2020, "unit": "children", "category": "vaccination" },
+      { "id": "bcg", "label": "BCG", "value": 3200000, "year": 2019, "unit": "children", "category": "vaccination" }
+    ],
+    "population": [
+      { "id": "populationAge0", "label": "Population Age 0", "value": 4650000, "year": 2020, "unit": "children", "category": "population" }
+    ],
+    "availableYears": [2020, 2019, 2018]
+  }
+}
+```
+
+**Important:**
+- Return **all years** of data (multi-year support)
+- `availableYears` array MUST be sorted descending (newest first)
+- Each metric item MUST include `year` field
+- Frontend handles filtering by selected year
+
+#### 2. GET /api/entity/{entityId}/health-metrics
+
+**Query Parameters:**
+- `year` (optional, number): Filter by specific year
+
+**Example:**
+```http
+GET /api/entity/wd:Q252/health-metrics
+```
+
+**Response:** Same `healthMetrics` object as endpoint #1
+
+#### 3. GET /api/entity/{entityId}/health-metrics/timeseries (Future)
+
+**Query Parameters:**
+- `metricId` (required): e.g., "hivCases", "bcg"
+- `startYear` (optional): Default 10 years ago
+- `endYear` (optional): Default current year
+
+**Response:**
+```json
+{
+  "entityId": "wd:Q252",
+  "metricId": "hivCases",
+  "metricLabel": "HIV/AIDS Cases",
+  "data": [
+    { "year": 2018, "value": 42000 },
+    { "year": 2019, "value": 43500 },
+    { "year": 2020, "value": 45000 }
+  ]
+}
+```
+
+### SPARQL Query Template (All Years)
+
+```sparql
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX kgp: <http://example.org/>
+PREFIX schema: <http://schema.org/>
+
+SELECT ?year ?hivCases ?malariaCases ?tuberculosisCases ?rabiesCases 
+       ?choleraCases ?yawsCases ?polioCases ?smallpoxCases ?guineaworm
+       ?bcg ?dtp3 ?hepb3 ?hib3 ?measles1 ?polio3 ?rotavirus ?rubella1
+       ?populationAge0
+WHERE {
+  ?healthRecord kgp:location wd:Q252 .
+  ?healthRecord schema:year ?year .
+  
+  # Disease Cases
+  OPTIONAL { ?healthRecord kgp:hivCases ?hivCases . }
+  OPTIONAL { ?healthRecord kgp:malariaCases ?malariaCases . }
+  OPTIONAL { ?healthRecord kgp:tuberculosisCases ?tuberculosisCases . }
+  OPTIONAL { ?healthRecord kgp:rabiesCases ?rabiesCases . }
+  OPTIONAL { ?healthRecord kgp:choleraCases ?choleraCases . }
+  OPTIONAL { ?healthRecord kgp:yawsCases ?yawsCases . }
+  OPTIONAL { ?healthRecord kgp:polioCases ?polioCases . }
+  OPTIONAL { ?healthRecord kgp:smallpoxCases ?smallpoxCases . }
+  OPTIONAL { ?healthRecord kgp:guineaworm ?guineaworm . }
+  
+  # Vaccination Coverage
+  OPTIONAL { ?healthRecord kgp:bcg ?bcg . }
+  OPTIONAL { ?healthRecord kgp:dtp3 ?dtp3 . }
+  OPTIONAL { ?healthRecord kgp:hepb3 ?hepb3 . }
+  OPTIONAL { ?healthRecord kgp:hib3 ?hib3 . }
+  OPTIONAL { ?healthRecord kgp:measles1 ?measles1 . }
+  OPTIONAL { ?healthRecord kgp:polio3 ?polio3 . }
+  OPTIONAL { ?healthRecord kgp:rotavirus ?rotavirus . }
+  OPTIONAL { ?healthRecord kgp:rubella1 ?rubella1 . }
+  
+  # Population
+  OPTIONAL { ?healthRecord kgp:populationAge0 ?populationAge0 . }
+}
+ORDER BY DESC(?year)
+```
+
+**⚠️ Important:** DO NOT use `LIMIT 1` - return all available years!
+
+### Data Transformation Logic (Backend)
+
+```python
+def transform_health_metrics(sparql_results, filter_year=None):
+    disease_metrics = []
+    vaccination_metrics = []
+    population_metrics = []
+    available_years = set()
+    
+    DISEASE_METRICS = {
+        'hivCases': 'HIV/AIDS Cases',
+        'malariaCases': 'Malaria Cases',
+        'tuberculosisCases': 'Tuberculosis Cases',
+        'rabiesCases': 'Rabies Cases',
+        'choleraCases': 'Cholera Cases',
+        'yawsCases': 'Yaws Cases',
+        'polioCases': 'Polio Cases',
+        'smallpoxCases': 'Smallpox Cases',
+        'guineaworm': 'Guinea Worm Disease',
+    }
+    
+    VACCINATION_METRICS = {
+        'bcg': 'BCG',
+        'dtp3': 'DTP3',
+        'hepb3': 'HepB3',
+        'hib3': 'Hib3',
+        'measles1': 'Measles (1st dose)',
+        'polio3': 'Polio (3rd dose)',
+        'rotavirus': 'Rotavirus (last dose)',
+        'rubella1': 'Rubella (1st dose)',
+    }
+    
+    for row in sparql_results:
+        year = row['year']
+        available_years.add(year)
+        
+        # Skip if filtering by year
+        if filter_year and year != filter_year:
+            continue
+        
+        # Process disease cases
+        for metric_id, label in DISEASE_METRICS.items():
+            if row.get(metric_id):
+                disease_metrics.append({
+                    'id': metric_id,
+                    'label': label,
+                    'value': int(row[metric_id]),
+                    'year': year,
+                    'category': 'disease'
+                })
+        
+        # Process vaccination coverage
+        for metric_id, label in VACCINATION_METRICS.items():
+            if row.get(metric_id):
+                vaccination_metrics.append({
+                    'id': metric_id,
+                    'label': label,
+                    'value': int(row[metric_id]),
+                    'year': year,
+                    'unit': 'children',
+                    'category': 'vaccination'
+                })
+        
+        # Process population
+        if row.get('populationAge0'):
+            population_metrics.append({
+                'id': 'populationAge0',
+                'label': 'Population Age 0',
+                'value': int(row['populationAge0']),
+                'year': year,
+                'unit': 'children',
+                'category': 'population'
+            })
+    
+    return {
+        'diseaseCases': disease_metrics,
+        'vaccinationCoverage': vaccination_metrics,
+        'population': population_metrics,
+        'availableYears': sorted(list(available_years), reverse=True)
+    }
+```
+
+### Frontend Implementation
+
+**TypeScript Types:**
+```typescript
+export interface HealthMetrics {
+  diseaseCases: HealthMetricItem[];
+  vaccinationCoverage: HealthMetricItem[];
+  population: HealthMetricItem[];
+  availableYears: number[]; // Sorted descending
+}
+
+export interface HealthMetricItem {
+  id: string;
+  label: string;
+  value: number;
+  year: number;
+  unit?: string;
+  category: 'disease' | 'vaccination' | 'population';
+}
+```
+
+**InfoBoxSheet Features:**
+- ✅ Year selector dropdown (purple theme)
+- ✅ Client-side filtering by selected year
+- ✅ Display health metrics by category (Disease/Vaccination/Population)
+- ✅ Card-based responsive grid layout
+- ✅ Fullscreen mode untuk better viewing
+- ✅ Number formatting dengan locale
+- ✅ Auto-select tahun terbaru sebagai default
+
+**Mock Data:**
+Mock service include data 3 tahun (2020, 2019, 2018) untuk testing:
+- Disease cases: HIV, Malaria, TB, Rabies, Cholera (5 metrics × 3 years)
+- Vaccination: BCG, DTP3, HepB3, Hib3, Measles1, Polio3, Rotavirus, Rubella1 (8 metrics × 3 years)
+- Population: Age 0 data (1 metric × 3 years)
+
+### Testing Checklist
+
+**Backend API Tests:**
+- [ ] Query returns all years of data (not just 1 year)
+- [ ] availableYears array sorted descending
+- [ ] Each metric includes year field
+- [ ] Response matches TypeScript interface
+- [ ] Filter by year works (optional)
+- [ ] Handle missing data gracefully
+
+**Frontend Tests:**
+- [ ] Year selector dropdown appears
+- [ ] Default year = availableYears[0]
+- [ ] Dropdown shows all available years
+- [ ] Selecting year updates all metrics
+- [ ] Disease Cases section updates
+- [ ] Vaccination Coverage section updates
+- [ ] Population Data section updates
+- [ ] No API call when switching years (client-side filter)
+
+---
+
 ## 🎭 Mock Services
 
 ### Current State
@@ -774,9 +1061,13 @@ import './HomePage.css';
 **Info Box:**
 - [ ] Opens from search results
 - [ ] Opens from map markers
-- [ ] Displays all sections (header, image, description, attributes, related, sources)
+- [ ] Displays all sections (header, image, description, attributes, health metrics, related, sources)
 - [ ] Expand button works (400px → 60vw)
 - [ ] Collapse button works (60vw → 400px)
+- [ ] Fullscreen button works (100vw)
+- [ ] Exit fullscreen works
+- [ ] Health metrics display by category (Disease/Vaccination/Population)
+- [ ] Health metrics cards show value, year, unit
 - [ ] Click related entity navigates correctly
 - [ ] Close button works
 - [ ] Overlay click closes in expanded mode
@@ -860,12 +1151,39 @@ npm outdated             # Check outdated packages
 6. **Integration testing** with frontend
 7. **Deploy** backend and frontend
 
+### Complete API Checklist for Backend
+
+#### Core APIs (Must Implement)
+- [ ] **GET /api/search** - Search entities with pagination
+- [ ] **GET /api/search/suggestions** - Autocomplete suggestions
+- [ ] **GET /api/entity/{entityId}** - Get entity detail with health metrics
+- [ ] **GET /api/map/countries** - Get all countries with coordinates
+
+#### Health Metrics APIs (New - High Priority)
+- [ ] **GET /api/entity/{entityId}/health-metrics** - Get health metrics only
+- [ ] **GET /api/entity/{entityId}/health-metrics/timeseries** - Time series data (Future)
+
+**📄 See `HEALTH_METRICS_API.md` for complete health metrics documentation**
+
+#### Enhanced APIs (Medium Priority)
+- [ ] **GET /api/entity/by-label** - Get entity by label string
+- [ ] **GET /api/entity/related** - Get related entities
+- [ ] **POST /api/sparql/query** - Execute SPARQL queries
+- [ ] **GET /api/sparql/samples** - Get sample queries
+- [ ] **GET /api/map/countries/{iso3Code}** - Get country by ISO code
+
+#### Optional APIs (Nice to Have)
+- [ ] **POST /api/sparql/validate** - Validate SPARQL syntax
+- [ ] **GET /api/sparql/history** - Get query history
+- [ ] **POST /api/sparql/history** - Save query to history
+
 ### Priority Order
 1. **High Priority** (Required for core functionality):
    - GET /api/search
    - GET /api/search/suggestions
-   - GET /api/entity/{entityId}
+   - GET /api/entity/{entityId} (with health metrics)
    - GET /api/map/countries
+   - GET /api/entity/{entityId}/health-metrics
 
 2. **Medium Priority** (Enhances experience):
    - GET /api/entity/by-label
@@ -877,7 +1195,7 @@ npm outdated             # Check outdated packages
    - POST /api/sparql/validate
    - GET /api/sparql/history
    - POST /api/sparql/history
-   - GET /api/entities/{id}/health-records
+   - GET /api/entity/{entityId}/health-metrics/timeseries
 
 ---
 

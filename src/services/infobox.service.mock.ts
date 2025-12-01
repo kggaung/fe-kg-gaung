@@ -47,6 +47,63 @@ const mockEntities: Record<string, EntityInfo> = {
         unit: 'km²',
       },
     ],
+    healthMetrics: {
+      diseaseCases: [
+        // 2020 data
+        { id: 'hivCases', label: 'HIV/AIDS Cases', value: 45000, year: 2020, category: 'disease' },
+        { id: 'malariaCases', label: 'Malaria Cases', value: 120000, year: 2020, category: 'disease' },
+        { id: 'tuberculosisCases', label: 'Tuberculosis Cases', value: 845000, year: 2020, category: 'disease' },
+        { id: 'rabiesCases', label: 'Rabies Cases', value: 150, year: 2020, category: 'disease' },
+        { id: 'choleraCases', label: 'Cholera Cases', value: 320, year: 2020, category: 'disease' },
+        // 2019 data
+        { id: 'hivCases', label: 'HIV/AIDS Cases', value: 43500, year: 2019, category: 'disease' },
+        { id: 'malariaCases', label: 'Malaria Cases', value: 135000, year: 2019, category: 'disease' },
+        { id: 'tuberculosisCases', label: 'Tuberculosis Cases', value: 825000, year: 2019, category: 'disease' },
+        { id: 'rabiesCases', label: 'Rabies Cases', value: 180, year: 2019, category: 'disease' },
+        { id: 'choleraCases', label: 'Cholera Cases', value: 450, year: 2019, category: 'disease' },
+        // 2018 data
+        { id: 'hivCases', label: 'HIV/AIDS Cases', value: 42000, year: 2018, category: 'disease' },
+        { id: 'malariaCases', label: 'Malaria Cases', value: 148000, year: 2018, category: 'disease' },
+        { id: 'tuberculosisCases', label: 'Tuberculosis Cases', value: 810000, year: 2018, category: 'disease' },
+        { id: 'rabiesCases', label: 'Rabies Cases', value: 200, year: 2018, category: 'disease' },
+        { id: 'choleraCases', label: 'Cholera Cases', value: 580, year: 2018, category: 'disease' },
+      ],
+      vaccinationCoverage: [
+        // 2020 data
+        { id: 'bcg', label: 'BCG', value: 3250000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'dtp3', label: 'DTP3', value: 3100000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'hepb3', label: 'HepB3', value: 3080000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'hib3', label: 'Hib3', value: 3100000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'measles1', label: 'Measles (1st dose)', value: 2950000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'polio3', label: 'Polio (3rd dose)', value: 3100000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'rotavirus', label: 'Rotavirus (last dose)', value: 2800000, year: 2020, unit: 'children', category: 'vaccination' },
+        { id: 'rubella1', label: 'Rubella (1st dose)', value: 2950000, year: 2020, unit: 'children', category: 'vaccination' },
+        // 2019 data
+        { id: 'bcg', label: 'BCG', value: 3200000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'dtp3', label: 'DTP3', value: 3050000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'hepb3', label: 'HepB3', value: 3030000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'hib3', label: 'Hib3', value: 3050000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'measles1', label: 'Measles (1st dose)', value: 2900000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'polio3', label: 'Polio (3rd dose)', value: 3050000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'rotavirus', label: 'Rotavirus (last dose)', value: 2750000, year: 2019, unit: 'children', category: 'vaccination' },
+        { id: 'rubella1', label: 'Rubella (1st dose)', value: 2900000, year: 2019, unit: 'children', category: 'vaccination' },
+        // 2018 data
+        { id: 'bcg', label: 'BCG', value: 3150000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'dtp3', label: 'DTP3', value: 3000000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'hepb3', label: 'HepB3', value: 2980000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'hib3', label: 'Hib3', value: 3000000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'measles1', label: 'Measles (1st dose)', value: 2850000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'polio3', label: 'Polio (3rd dose)', value: 3000000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'rotavirus', label: 'Rotavirus (last dose)', value: 2700000, year: 2018, unit: 'children', category: 'vaccination' },
+        { id: 'rubella1', label: 'Rubella (1st dose)', value: 2850000, year: 2018, unit: 'children', category: 'vaccination' },
+      ],
+      population: [
+        { id: 'populationAge0', label: 'Population Age 0', value: 4650000, year: 2020, unit: 'children', category: 'population' },
+        { id: 'populationAge0', label: 'Population Age 0', value: 4600000, year: 2019, unit: 'children', category: 'population' },
+        { id: 'populationAge0', label: 'Population Age 0', value: 4550000, year: 2018, unit: 'children', category: 'population' },
+      ],
+      availableYears: [2020, 2019, 2018],
+    },
     relatedEntities: [
       {
         id: 'wd:Q11708',

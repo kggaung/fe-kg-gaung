@@ -47,6 +47,17 @@
   width: 60vw;
 }
 
+.infobox-sheet.fullscreen {
+  width: 100vw;
+  left: 0;
+}
+
+.infobox-sheet-overlay.fullscreen {
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.5);
+}
+
 /* Sheet Header */
 .infobox-sheet-header {
   display: flex;
@@ -57,7 +68,15 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.infobox-sheet-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+
 .infobox-sheet-expand-btn,
+.infobox-sheet-fullscreen-btn,
 .infobox-sheet-close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -72,12 +91,18 @@
 }
 
 .infobox-sheet-expand-btn:hover,
+.infobox-sheet-fullscreen-btn:hover,
 .infobox-sheet-close-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.infobox-sheet-expand-btn {
-  margin-right: auto;
+.infobox-sheet-expand-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.infobox-sheet-expand-btn:disabled:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Sheet Content */
@@ -151,6 +176,43 @@
   font-weight: 600;
   color: #374151;
   margin: 0 0 12px 0;
+}
+
+/* Health Data Header with Year Selector */
+.infobox-health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.infobox-health-header .infobox-section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.infobox-year-selector {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.infobox-year-selector:hover {
+  border-color: #7c3aed;
+  background: #f9f7ff;
+}
+
+.infobox-year-selector:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 .infobox-description {
@@ -309,6 +371,80 @@
 .infobox-source-date {
   color: #9ca3af;
   font-size: 12px;
+}
+
+/* Health Metrics Styles */
+.infobox-health-category {
+  margin-bottom: 24px;
+}
+
+.infobox-health-category:last-child {
+  margin-bottom: 0;
+}
+
+.infobox-health-category-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.infobox-health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.infobox-health-card {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.infobox-health-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.infobox-health-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.infobox-health-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 4px;
+}
+
+.infobox-health-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.infobox-health-year {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Fullscreen adjustments */
+.infobox-sheet.fullscreen .infobox-health-grid {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.infobox-sheet.fullscreen .infobox-sheet-content {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* Scrollbar Styling */

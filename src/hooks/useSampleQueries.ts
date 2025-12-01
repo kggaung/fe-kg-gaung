@@ -24,7 +24,7 @@ export const useSampleQueries = (): UseSampleQueriesReturn => {
     try {
       const data = await sparqlService.getSampleQueries();
       // Extract query strings from sample objects
-      const queries = data.map((sample: any) => 
+      const queries = data.map((sample: string | { query: string }) => 
         typeof sample === 'string' ? sample : sample.query
       );
       setSamples(queries);
