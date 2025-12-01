@@ -2,7 +2,7 @@
 
 > A modern web application for exploring global health data through an interactive Knowledge Graph interface
 
-![React](https://img.shields.io/badge/React-19.2.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue) ![Vite](https://img.shields.io/badge/Vite-7.2.4-purple) ![License](https://img.shields.io/badge/license-MIT-green)
+![React](https://img.shields.io/badge/React-18.3.1-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue) ![Vite](https://img.shields.io/badge/Vite-7.2.4-purple) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 📖 Overview
 
@@ -117,7 +117,7 @@ fe-kg-gaung/
 
 ## 🔧 Technology Stack
 
-- **Frontend Framework**: React 19.2.0 with React Router
+- **Frontend Framework**: React 18.3.1 with React Router 6
 - **Language**: TypeScript 5.9.3 (strict mode)
 - **Build Tool**: Vite 7.2.4
 - **HTTP Client**: Axios
