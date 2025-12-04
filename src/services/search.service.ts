@@ -58,6 +58,6 @@ class SearchService implements ISearchService {
 import { mockSearchService } from './search.service.mock';
 
 // Toggle between mock and real service
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export const searchService = USE_MOCK ? mockSearchService : new SearchService(httpClient);

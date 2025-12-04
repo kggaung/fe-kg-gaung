@@ -102,7 +102,7 @@ class SPARQLService implements ISPARQLService {
 import { mockSPARQLService } from './sparql.service.mock';
 
 // Toggle between mock and real service
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 // Export singleton instance (configured with httpClient)
 export const sparqlService = USE_MOCK ? mockSPARQLService : new SPARQLService(httpClient);

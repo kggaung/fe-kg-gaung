@@ -239,7 +239,7 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
                 <div className="infobox-health-category">
                   <h3 className="infobox-health-category-title">Disease Cases</h3>
                   <div className="infobox-health-grid">
-                    {healthMetrics.diseaseCases.map((metric) => (
+                    {filteredHealthMetrics.diseaseCases.map((metric) => (
                       <div key={metric.id} className="infobox-health-card">
                         <div className="infobox-health-label">{metric.label}</div>
                         <div className="infobox-health-value">
