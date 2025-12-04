@@ -196,7 +196,7 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
                   <div key={index} className="infobox-attribute-row">
                     <div className="infobox-attribute-label">{attr.propertyLabel}</div>
                     <div className="infobox-attribute-value">
-                      {attr.valueType === 'entity' && attr.valueLabel ? (
+                      {attr.valueType === 'entity' && attr.valueLabel && attr.propertyLabel !== 'Capital' ? (
                         <button
                           className="infobox-entity-link"
                           onClick={() => handleRelatedClick(attr.value)}
@@ -205,7 +205,7 @@ export const InfoBoxSheet: React.FC<InfoBoxSheetProps> = ({
                         </button>
                       ) : (
                         <>
-                          {formatValue(attr.value, attr.valueType)}
+                          {attr.valueType === 'entity' && attr.valueLabel ? attr.valueLabel : formatValue(attr.value, attr.valueType)}
                           {attr.unit && <span className="infobox-unit"> {attr.unit}</span>}
                         </>
                       )}
