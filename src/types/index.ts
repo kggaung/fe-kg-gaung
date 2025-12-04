@@ -6,7 +6,7 @@ export interface Entity {
   type: EntityType;
 }
 
-export type EntityType = 'country' | 'region' | 'organization';
+export type EntityType = 'country' | 'region' | 'organization' | 'division';
 
 // Health Record Types
 export interface HealthRecord {
