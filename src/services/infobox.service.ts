@@ -91,6 +91,6 @@ export class InfoBoxService implements IInfoBoxService {
 import { mockInfoBoxService } from './infobox.service.mock';
 
 // Toggle between mock and real service
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export const infoBoxService = USE_MOCK ? mockInfoBoxService : new InfoBoxService(httpClient);

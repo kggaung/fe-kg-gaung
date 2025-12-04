@@ -859,7 +859,7 @@ Mock services are **ENABLED** for frontend development:
 
 ```typescript
 // src/services/search.service.ts
-const USE_MOCK = true; // ← Change to false when backend is ready
+const USE_MOCK = false; // ← Change to false when backend is ready
 ```
 
 ### Mock Data Available
